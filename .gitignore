@@ -1,0 +1,40 @@
+# Node.js dependencies
+/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (if you use VS Code)
+.vscode/
+
+# Build output
+/dist
+/build
+
+# npm package lock file (optional, but sometimes useful to exclude)
+package-lock.json
+
+# Ternary .yarn.lock file if using Yarn
+yarn.lock
+
+# IDEs like JetBrains
+.idea/
+
+# Database files (if you're using SQLite or something similar)
+*.sqlite
+
+# Test coverage
+coverage/
+
+# Misc
+*.tgz
