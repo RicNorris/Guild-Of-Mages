@@ -38,7 +38,7 @@ module.exports = async (interaction) => {
         .setDescription(lines.join("\n"))
         .setColor(0x6e00ff);
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], ephemeral: false });
     } catch (err) {
       console.error(err);
       return interaction.reply({
