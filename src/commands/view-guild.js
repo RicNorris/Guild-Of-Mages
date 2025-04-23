@@ -32,6 +32,14 @@ module.exports = {
 
       const guild = result.rows[0];
 
+      // Get Guild Tower
+      const towerRes = await pool.query(
+        "SELECT level, xp, energy_pool FROM guild_towers WHERE guild_id = $1",
+        [guild.id]
+      );
+
+      const tower = towerRes.rows[0] || { level: 1, xp: 0, energy_pool: 0 };
+
       const guildMageNumber = await pool.query(
         "SELECT COUNT(discord_guild_id) FROM players WHERE discord_guild_id = $1",
         [discordGuildId]
@@ -52,8 +60,8 @@ module.exports = {
           `
           📜**Description:** ${description}
           🧙‍♂️**Created By:** <@${guild.owner_id}>
-          📈**Level:** ${guild.level} — **XP:** ${guild.xp}
-          💠**Mana Pool:** ${guild.mana_pool}${alignment}${crest}
+          📈**Level:** ${tower.level} — **XP:** ${tower.xp}
+          💠**Energy Pool:** ${tower.energy_pool}${alignment}${crest}
           🧙**Registered Mages:** ${mageCount}
           📅**Created At:** ${new Date(guild.created_at).toLocaleDateString()}
         `

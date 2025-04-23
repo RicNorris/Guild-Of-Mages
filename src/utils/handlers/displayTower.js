@@ -34,6 +34,8 @@ async function displayTower(discordUserId) {
     .setTitle("🗼 Guild Tower")
     .addFields(
       { name: "Level", value: `${tower.level}`, inline: true },
+      { name: "XP", value: `${tower.xp}`, inline: true },
+      { name: "Energy Pool", value: `${tower.energy_pool}`, inline: true },
       {
         name: "Rooms",
         value:
@@ -51,6 +53,7 @@ async function displayTower(discordUserId) {
         inline: false,
       }
     )
+
     .setDescription(tower.lore || "*No lore recorded yet.*")
     .setColor(0x9b59b6)
     .setTimestamp();

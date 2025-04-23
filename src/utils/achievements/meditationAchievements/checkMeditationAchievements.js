@@ -5,12 +5,12 @@ const { addTitleToPlayer } = require("../../handlers/titles");
 async function checkMeditationAchievements(playerId) {
   const unlocked = [];
 
-  // Get total meditation sessions
+  // Get total meditation sessions from the players table
   const { rows } = await pool.query(
-    `SELECT COUNT(*) FROM player_meditations WHERE player_id = $1`,
+    `SELECT total_meditations FROM players WHERE id = $1`,
     [playerId]
   );
-  const totalSessions = parseInt(rows[0].count);
+  const totalSessions = parseInt(rows[0].total_meditations);
 
   for (const achievement of meditationAchievements) {
     if (totalSessions >= achievement.sessionsRequired) {

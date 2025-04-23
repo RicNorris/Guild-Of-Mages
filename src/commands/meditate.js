@@ -2,6 +2,9 @@ const { SlashCommandBuilder } = require("discord.js");
 const pool = require("../utils/database");
 const checkLevelUp = require("../utils/progression");
 const checkMeditationAchievements = require("../utils/achievements/meditationAchievements/checkMeditationAchievements");
+const redis = require("../utils/redisClient");
+
+const MEDITATION_COOLDOWN_SECONDS = 2 * 60 * 60; // 2 hours
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,16 +13,15 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Fetch the player info
       const discordUserId = interaction.user.id;
       const discordGuildId = interaction.guild.id;
+      const cooldownKey = `cooldown:meditation:${discordUserId}`;
 
       const playerResult = await pool.query(
         `SELECT * FROM players WHERE discord_user_id = $1 AND discord_guild_id = $2`,
         [discordUserId, discordGuildId]
       );
 
-      // Check if player is meditating in the right server
       if (playerResult.rows.length === 0) {
         return interaction.reply({
           content: "You are not registered as a mage in this guild.",
@@ -29,20 +31,12 @@ module.exports = {
 
       const player = playerResult.rows[0];
 
-      //Check if player has meditated in the last 2 hours
-      const now = new Date();
-      const elapsed = now - new Date(player.last_meditation_at);
-      //const cooldown = 2 * 60 * 60 * 1000; //2 hours in ms
-      const cooldown = 0;
-
-      if (elapsed < cooldown) {
-        const remainingTime = cooldown - elapsed;
-
-        // Convert remaining time into minutes
-        const minutesLeft = Math.floor(remainingTime / (1000 * 60)); // Convert ms to minutes
-
+      // Check Redis for cooldown
+      const ttl = await redis.ttl(cooldownKey);
+      if (ttl > 0) {
+        const minutesLeft = Math.ceil(ttl / 60);
         return interaction.reply({
-          content: `⏳ You have not passed the meditation cooldown! Please wait ${minutesLeft} minute(s) before you can meditate again.`,
+          content: `⏳ You're still on cooldown! Please wait ${minutesLeft} minute(s) before you can meditate again.`,
           ephemeral: true,
         });
       }
@@ -56,32 +50,33 @@ module.exports = {
         Ascendant: { mana: 80, xp: 150 },
       };
 
-      const reward = rankRewards[player.rank] || { mana: 10, xp: 20 }; // fallback
-
+      const reward = rankRewards[player.rank] || { mana: 10, xp: 20 };
       const newMana = player.mana + reward.mana;
       const newXP = player.xp + reward.xp;
+      const newTotalMeditations = (player.total_meditations || 0) + 1;
 
-      // Update player stats and cooldown
+      // Update player stats and meditation count
       await pool.query(
-        `UPDATE players SET mana = $1, xp = $2, last_meditation_at = NOW() WHERE id = $3`,
-        [newMana, newXP, player.id]
+        `UPDATE players 
+         SET mana = $1, xp = $2, total_meditations = $3 
+         WHERE id = $4`,
+        [newMana, newXP, newTotalMeditations, player.id]
       );
 
-      // Update meditation total
-      await pool.query(
-        `INSERT INTO player_meditations (player_id, meditated_at) VALUES ($1, $2)`,
-        [player.id, new Date()]
-      );
+      // Set Redis cooldown
+      await redis.setEx(cooldownKey, MEDITATION_COOLDOWN_SECONDS, "onCooldown");
 
-      // Reply with meditation result first
+      const verifyTTL = await redis.ttl(cooldownKey);
+      console.log(`Meditation cooldown set. TTL: ${verifyTTL} seconds`);
+
+      // Initial meditation reply
       await interaction.reply({
         content: `🧘 You feel refreshed after your meditation.\n✨ You gained **${reward.mana} Mana** and **${reward.xp} XP**.`,
         ephemeral: true,
       });
 
-      // Then check and follow up with level up
+      // Level up check
       const levelUpResult = await checkLevelUp({ ...player, xp: newXP });
-
       if (levelUpResult.leveledUp) {
         await interaction.followUp({
           content: `🎉 You leveled up to **Level ${levelUpResult.newLevel}**! Your magical aura intensifies.`,
@@ -89,8 +84,8 @@ module.exports = {
         });
       }
 
+      // Achievement check
       const unlockedAchievements = await checkMeditationAchievements(player.id);
-
       if (unlockedAchievements.length > 0) {
         const names = unlockedAchievements
           .map((a) => `🏅 **${a.name}**: ${a.description}`)
