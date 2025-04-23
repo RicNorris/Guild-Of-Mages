@@ -6,6 +6,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const pool = require("../utils/database");
+const displayTower = require("../utils/handlers/displayTower");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -65,14 +66,49 @@ module.exports = {
         .setLabel("View Members")
         .setStyle(ButtonStyle.Primary);
 
-      // Create an action row with the button
-      const row = new ActionRowBuilder().addComponents(viewMembersButton);
+      // Create the "View Tower" button
+      const viewTowerButton = new ButtonBuilder()
+        .setCustomId("view_guild_tower")
+        .setLabel("View Tower")
+        .setStyle(ButtonStyle.Secondary);
 
-      // Send the embed with the button
+      // Add both buttons to a row
+      const row = new ActionRowBuilder().addComponents(
+        viewMembersButton,
+        viewTowerButton
+      );
+
       await interaction.reply({
         embeds: [guildEmbed],
         components: [row],
         ephemeral: false,
+      });
+
+      const collector = interaction.channel.createMessageComponentCollector({
+        filter: (i) =>
+          ["view_guild_members", "view_guild_tower"].includes(i.customId) &&
+          i.user.id === interaction.user.id,
+        time: 20000,
+        max: 1,
+      });
+
+      collector.on("collect", async (i) => {
+        if (i.customId === "view_guild_tower") {
+          const { embed, error } = await displayTower(i.user.id);
+
+          if (error) {
+            return i.reply({ content: error, ephemeral: true });
+          }
+
+          return i.reply({ embeds: [embed], ephemeral: false });
+        }
+
+        if (i.customId === "view_guild_members") {
+          return i.reply({
+            content: "🔍 Member viewing isn't implemented yet!",
+            ephemeral: true,
+          });
+        }
       });
     } catch (err) {
       console.error(err);
