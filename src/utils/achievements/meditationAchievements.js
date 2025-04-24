@@ -25,14 +25,14 @@ const meditationAchievements = [
     name: "Seer of the Veil",
     sessionsRequired: 30,
     description: "You glimpse through the veil of thought.",
-    title: null,
+    title: "Veil Seer",
   },
   {
     tier: 5,
     name: "Mindweaver",
     sessionsRequired: 50,
     description: "You weave clarity like threads of magic.",
-    title: null,
+    title: "Mindweaver",
   },
   {
     tier: 6,
@@ -46,7 +46,7 @@ const meditationAchievements = [
     name: "Echo of Eternity",
     sessionsRequired: 150,
     description: "You are one with the silence that binds all things.",
-    title: null,
+    title: "Eternal Echo",
   },
 ];
 

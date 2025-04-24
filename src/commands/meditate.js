@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require("discord.js");
 const pool = require("../utils/database");
 const checkLevelUp = require("../utils/progression");
-const checkMeditationAchievements = require("../utils/achievements/meditationAchievements/checkMeditationAchievements");
+const meditationAchievements = require("../utils/achievements/meditationAchievements");
+const checkAchievements = require("../utils/achievements/checkAchievements");
 const redis = require("../utils/redisClient");
 
 const MEDITATION_COOLDOWN_SECONDS = 2 * 60 * 60; // 2 hours
@@ -53,14 +54,22 @@ module.exports = {
       const reward = rankRewards[player.rank] || { mana: 10, xp: 20 };
       const newMana = player.mana + reward.mana;
       const newXP = player.xp + reward.xp;
-      const newTotalMeditations = (player.total_meditations || 0) + 1;
 
-      // Update player stats and meditation count
+      // Update player stats
+      await pool.query(`UPDATE players SET mana = $1, xp = $2 WHERE id = $3`, [
+        newMana,
+        newXP,
+        player.id,
+      ]);
+
+      // Upsert meditation progress into player_progress
       await pool.query(
-        `UPDATE players 
-         SET mana = $1, xp = $2, total_meditations = $3 
-         WHERE id = $4`,
-        [newMana, newXP, newTotalMeditations, player.id]
+        `INSERT INTO player_progress (player_id, progress_type, progress_count)
+         VALUES ($1, 'meditations', 1)
+         ON CONFLICT (player_id, progress_type)
+         DO UPDATE SET progress_count = player_progress.progress_count + 1,
+                       updated_at = now()`,
+        [player.id]
       );
 
       // Set Redis cooldown
@@ -85,11 +94,17 @@ module.exports = {
       }
 
       // Achievement check
-      const unlockedAchievements = await checkMeditationAchievements(player.id);
+      const unlockedAchievements = await checkAchievements(
+        player.id,
+        "meditations",
+        meditationAchievements
+      );
+
       if (unlockedAchievements.length > 0) {
         const names = unlockedAchievements
           .map((a) => `🏅 **${a.name}**: ${a.description}`)
           .join("\n");
+
         await interaction.followUp({
           content: `You've unlocked new meditation achievement(s):\n${names}`,
           ephemeral: true,
