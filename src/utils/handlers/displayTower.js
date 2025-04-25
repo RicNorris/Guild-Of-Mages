@@ -53,9 +53,9 @@ async function displayTower(discordUserId) {
         inline: false,
       }
     )
-
     .setDescription(tower.lore || "*No lore recorded yet.*")
     .setColor(0x9b59b6)
+    .setImage(imageUrl)
     .setTimestamp();
 
   return { embed };
