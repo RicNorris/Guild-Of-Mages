@@ -1,4 +1,6 @@
 const { Client, GatewayIntentBits, Collection, Events } = require("discord.js");
+const express = require("express");
+const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -51,6 +53,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
 // On ready
 client.once(Events.ClientReady, () => {
   console.log(`Bot is online as ${client.user.tag}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("Bot is alive!");
+});
+
+app.listen(3000, () => {
+  console.log("Keep-alive server running on port 3000");
 });
 
 client.login(process.env.DISCORD_TOKEN);
