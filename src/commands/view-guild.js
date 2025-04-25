@@ -97,25 +97,53 @@ module.exports = {
           ["view_guild_members", "view_guild_tower"].includes(i.customId) &&
           i.user.id === interaction.user.id,
         time: 20000,
-        max: 1,
       });
 
       collector.on("collect", async (i) => {
-        if (i.customId === "view_guild_tower") {
-          const { embed, error } = await displayTower(i.user.id);
+        try {
+          await i.deferReply({ ephemeral: true });
 
-          if (error) {
-            return i.reply({ content: error, ephemeral: true });
+          if (i.customId === "view_guild_tower") {
+            const { embed, error } = await displayTower(i.user.id);
+            if (error) {
+              return await i.editReply({ content: error });
+            }
+            return await i.editReply({ embeds: [embed] });
           }
 
-          return i.reply({ embeds: [embed], ephemeral: false });
+          if (i.customId === "view_guild_members") {
+            // In the future: return a real member list
+            return await i.editReply({
+              content: "🔍 Member viewing isn't implemented yet!",
+            });
+          }
+        } catch (err) {
+          console.error("Error during button interaction:", err);
+          if (!i.replied && !i.deferred) {
+            try {
+              await i.reply({
+                content: "❌ Something went wrong.",
+                ephemeral: true,
+              });
+            } catch (e) {
+              console.error("Error sending fallback reply:", e);
+            }
+          }
         }
+      });
 
-        if (i.customId === "view_guild_members") {
-          return i.reply({
-            content: "🔍 Member viewing isn't implemented yet!",
-            ephemeral: true,
-          });
+      // Makes sure buttons are disabled after the collector timer ends
+      collector.on("end", async () => {
+        try {
+          const disabledRow = new ActionRowBuilder().addComponents(
+            viewMembersButton.setDisabled(true),
+            viewTowerButton.setDisabled(true)
+          );
+
+          const message = await interaction.fetchReply();
+          await message.edit({ components: [disabledRow] });
+        } catch (err) {
+          console.error("Error disabling buttons:", err);
         }
       });
     } catch (err) {

@@ -8,6 +8,9 @@ module.exports = async (interaction) => {
     const discordGuildId = interaction.guild.id;
 
     try {
+      // Defer the reply if there is any heavy database query or processing
+      await interaction.deferReply({ ephemeral: true }); // Defer the reply to allow async operations
+
       // Get all registered players in the guild, sorted by level
       const membersResult = await pool.query(
         `SELECT discord_user_id, level
@@ -18,9 +21,8 @@ module.exports = async (interaction) => {
       );
 
       if (membersResult.rows.length === 0) {
-        return interaction.reply({
+        return await interaction.editReply({
           content: "There are no registered mages yet.",
-          ephemeral: true,
         });
       }
 
@@ -38,10 +40,10 @@ module.exports = async (interaction) => {
         .setDescription(lines.join("\n"))
         .setColor(0x6e00ff);
 
-      await interaction.reply({ embeds: [embed], ephemeral: false });
+      await interaction.editReply({ embeds: [embed], ephemeral: false });
     } catch (err) {
       console.error(err);
-      return interaction.reply({
+      return await interaction.editReply({
         content: "Error fetching members.",
         ephemeral: true,
       });
