@@ -2,6 +2,8 @@ const { Client, GatewayIntentBits, Collection, Events } = require("discord.js");
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+const { exec } = require("child_process");
+
 dotenv.config();
 
 // Handlers
