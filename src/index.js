@@ -54,7 +54,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // On ready
 client.once(Events.ClientReady, () => {
-  console.log(`Bot is online as ${client.user.tag}`);
+  console.log(`Bot is now online as ${client.user.tag}`);
 });
 
 app.post("/webhook", (req, res) => {
