@@ -55,6 +55,18 @@ client.once(Events.ClientReady, () => {
   console.log(`Bot is online as ${client.user.tag}`);
 });
 
+app.post("/webhook", (req, res) => {
+  console.log("Received webhook:", req.body);
+  exec("git pull origin main", (err, stdout, stderr) => {
+    if (err) {
+      console.error(`Error: ${stderr}`);
+      return res.status(500).send("Pull failed");
+    }
+    console.log(`Pulled: ${stdout}`);
+    res.send("Pulled!");
+  });
+});
+
 app.get("/", (req, res) => {
   res.send("Bot is alive!");
 });
