@@ -58,14 +58,26 @@ client.once(Events.ClientReady, () => {
 });
 
 app.post("/webhook", (req, res) => {
-  console.log("Received webhook:", req.body);
-  exec("git pull origin main", (err, stdout, stderr) => {
-    if (err) {
-      console.error(`Error: ${stderr}`);
+  exec("git pull", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
       return res.status(500).send("Pull failed");
     }
-    console.log(`Pulled: ${stdout}`);
-    res.send("Pulled!");
+
+    console.log(`stdout:\n${stdout}`);
+    console.error(`stderr:\n${stderr}`);
+
+    if (stdout.includes("Updating") || stdout.includes("changed")) {
+      console.log("Code updated. Restarting bot...");
+
+      // Delay a bit before exiting so the response gets sent
+      res.status(200).send("Updated, restarting bot.");
+      setTimeout(() => {
+        process.exit(0); // Replit will auto-restart the process
+      }, 1000);
+    } else {
+      res.status(200).send("No changes, no restart needed.");
+    }
   });
 });
 
