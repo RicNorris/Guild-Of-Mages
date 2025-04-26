@@ -87,8 +87,14 @@ module.exports = {
       // Level up check
       const levelUpResult = await checkLevelUp({ ...player, xp: newXP });
       if (levelUpResult.leveledUp) {
+        let levelUpMessage = `🎉 You leveled up to **Level ${levelUpResult.newLevel}**! Your magical aura intensifies.`;
+
+        if (levelUpResult.newRank && levelUpResult.newRank !== player.rank) {
+          levelUpMessage += `\n🏅 You've ascended to the rank of **${levelUpResult.newRank}**!`;
+        }
+
         await interaction.followUp({
-          content: `🎉 You leveled up to **Level ${levelUpResult.newLevel}**! Your magical aura intensifies.`,
+          content: levelUpMessage,
           ephemeral: true,
         });
       }
