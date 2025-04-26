@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const displayTower = require("../utils/handlers/displayTower");
+const { MessageFlags } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,9 +11,12 @@ module.exports = {
     const { embed, error } = await displayTower(interaction.user.id);
 
     if (error) {
-      return interaction.reply({ content: error, ephemeral: true });
+      return interaction.reply({
+        content: error,
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    return interaction.reply({ embeds: [embed], ephemeral: false });
+    return interaction.reply({ embeds: [embed] });
   },
 };

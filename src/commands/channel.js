@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const pool = require("../utils/database");
 const redis = require("../utils/redisClient");
 const { getMaxTowerEnergy } = require("../utils/towerEnergyCaps");
+const { MessageFlags } = require("discord.js");
 
 const CHANNEL_COOLDOWN_SECONDS = 2 * 60 * 60; // 2 hours
 
@@ -26,7 +27,7 @@ module.exports = {
       if (playerResult.rows.length === 0) {
         return interaction.reply({
           content: "You are not registered as a mage in this guild.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -42,7 +43,7 @@ module.exports = {
       if (towerResult.rows.length === 0) {
         return interaction.reply({
           content: "This guild tower does not exist yet",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -54,7 +55,7 @@ module.exports = {
       if (tower.energy_pool === maxTowerEnergy) {
         return interaction.reply({
           content: "Maximum ammount of energy stored in the tower",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -63,7 +64,7 @@ module.exports = {
         const minutesLeft = Math.ceil(ttl / 60);
         return interaction.reply({
           content: `⏳ You're still on cooldown! Please wait ${minutesLeft} minute(s) before you can meditate again.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -112,13 +113,13 @@ module.exports = {
       // Initial channel reply
       await interaction.reply({
         content: randomPhrase,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch (err) {
       console.error(err);
       return interaction.reply({
         content: "There was an error channeling energy.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

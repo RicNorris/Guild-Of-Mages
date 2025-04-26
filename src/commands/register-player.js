@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const pool = require("../utils/database");
+const { MessageFlags } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -35,7 +36,7 @@ module.exports = {
       if (existingPlayer.rows.length > 0) {
         return interaction.reply({
           content: "You are already registered as a mage in this guild.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -48,7 +49,7 @@ module.exports = {
       if (guildResult.rows.length === 0) {
         return interaction.reply({
           content: "No guild has been created in this server yet!",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -79,13 +80,12 @@ module.exports = {
 
       return interaction.reply({
         content: `You have joined the guild as **${title}**. Welcome, mage! ✨`,
-        ephemeral: false,
       });
     } catch (err) {
       console.error(err);
       return interaction.reply({
         content: "An error occurred while registering you.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

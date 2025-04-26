@@ -7,6 +7,7 @@ const {
   StringSelectMenuBuilder,
 } = require("discord.js");
 const pool = require("../utils/database");
+const { MessageFlags } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ module.exports = {
         return interaction.reply({
           content:
             "❌ You are not registered as a mage yet! Use /register-player to begin your journey.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -66,7 +67,6 @@ module.exports = {
       await interaction.reply({
         embeds: [embed],
         components: [buttonRow],
-        ephemeral: false,
       });
 
       // Wait for button interaction
@@ -96,7 +96,7 @@ module.exports = {
         if (unlockedTitles.length === 0) {
           return i.reply({
             content: "❌ You don’t have any unlocked titles yet.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -116,7 +116,7 @@ module.exports = {
         await i.reply({
           content: "Select a title to equip:",
           components: [selectRow],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
         const menuCollector =
@@ -137,7 +137,7 @@ module.exports = {
 
           await selection.reply({
             content: `✅ Title set to **${selectedTitle}**.`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         });
       });
@@ -145,7 +145,7 @@ module.exports = {
       console.error(err);
       return interaction.reply({
         content: "❌ There was an error fetching your profile.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

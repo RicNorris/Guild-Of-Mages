@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const pool = require("../database");
+const { MessageFlags } = require("discord.js");
 
 module.exports = async (interaction) => {
   if (!interaction.isButton()) return;
@@ -9,7 +10,7 @@ module.exports = async (interaction) => {
 
     try {
       // Defer the reply if there is any heavy database query or processing
-      await interaction.deferReply({ ephemeral: true }); // Defer the reply to allow async operations
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral }); // Defer the reply to allow async operations
 
       // Get all registered players in the guild, sorted by level
       const membersResult = await pool.query(
@@ -40,12 +41,12 @@ module.exports = async (interaction) => {
         .setDescription(lines.join("\n"))
         .setColor(0x6e00ff);
 
-      await interaction.editReply({ embeds: [embed], ephemeral: false });
+      await interaction.editReply({ embeds: [embed] });
     } catch (err) {
       console.error(err);
       return await interaction.editReply({
         content: "Error fetching members.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }
