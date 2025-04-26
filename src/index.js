@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 const { exec } = require("child_process");
+const { MessageFlags } = require("discord.js");
 
 dotenv.config();
 
@@ -46,7 +47,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error(error);
       await interaction.reply({
         content: "There was an error executing this command!",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }

@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const pool = require("../utils/database");
 const displayTower = require("../utils/handlers/displayTower");
+const { MessageFlags } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ module.exports = {
         return interaction.reply({
           content:
             "❌ This server does not have a guild yet. Use `/create-guild` to summon one!",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -89,19 +90,18 @@ module.exports = {
       await interaction.reply({
         embeds: [guildEmbed],
         components: [row],
-        ephemeral: false,
       });
 
       const collector = interaction.channel.createMessageComponentCollector({
         filter: (i) =>
           ["view_guild_members", "view_guild_tower"].includes(i.customId) &&
           i.user.id === interaction.user.id,
-        time: 20000,
+        time: 60000,
       });
 
       collector.on("collect", async (i) => {
         try {
-          await i.deferReply({ ephemeral: true });
+          await i.deferReply({ flags: MessageFlags.Ephemeral });
 
           if (i.customId === "view_guild_tower") {
             const { embed, error } = await displayTower(i.user.id);
@@ -123,7 +123,7 @@ module.exports = {
             try {
               await i.reply({
                 content: "❌ Something went wrong.",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
               });
             } catch (e) {
               console.error("Error sending fallback reply:", e);
@@ -150,7 +150,7 @@ module.exports = {
       console.error(err);
       return interaction.reply({
         content: "❌ There was an error fetching the guild.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

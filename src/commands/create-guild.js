@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const pool = require("../utils/database");
+const { MessageFlags } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,7 +35,7 @@ module.exports = {
       if (serverCheck.rows.length > 0) {
         return interaction.reply({
           content: "This server already has a guild.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -47,7 +48,7 @@ module.exports = {
       if (userCheck.rows.length > 0) {
         return interaction.reply({
           content: "You've already created a guild in another server.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -60,7 +61,7 @@ module.exports = {
       if (userInAnotherGuildCheck.rows.length > 0) {
         return interaction.reply({
           content: "You are already in a guild",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -73,7 +74,7 @@ module.exports = {
       if (guildNameCheck.rows.length > 0) {
         return interaction.reply({
           content: "There already exists an guild with that name.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -102,7 +103,7 @@ module.exports = {
       console.error(err);
       return interaction.reply({
         content: "There was an error creating the guild.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

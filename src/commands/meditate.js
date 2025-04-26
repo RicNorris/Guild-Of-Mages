@@ -4,6 +4,7 @@ const checkLevelUp = require("../utils/progression");
 const meditationAchievements = require("../utils/achievements/meditationAchievements");
 const checkAchievements = require("../utils/achievements/checkAchievements");
 const redis = require("../utils/redisClient");
+const { MessageFlags } = require("discord.js");
 
 const MEDITATION_COOLDOWN_SECONDS = 2 * 60 * 60; // 2 hours
 
@@ -26,7 +27,7 @@ module.exports = {
       if (playerResult.rows.length === 0) {
         return interaction.reply({
           content: "You are not registered as a mage in this guild.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -38,7 +39,7 @@ module.exports = {
         const minutesLeft = Math.ceil(ttl / 60);
         return interaction.reply({
           content: `⏳ You're still on cooldown! Please wait ${minutesLeft} minute(s) before you can meditate again.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -81,7 +82,7 @@ module.exports = {
       // Initial meditation reply
       await interaction.reply({
         content: `🧘 You feel refreshed after your meditation.\n✨ You gained **${reward.mana} Mana** and **${reward.xp} XP**.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       // Level up check
@@ -95,7 +96,7 @@ module.exports = {
 
         await interaction.followUp({
           content: levelUpMessage,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -113,14 +114,14 @@ module.exports = {
 
         await interaction.followUp({
           content: `You've unlocked new meditation achievement(s):\n${names}`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     } catch (err) {
       console.error(err);
       return interaction.reply({
         content: "There was an error meditating.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },
