@@ -30,6 +30,14 @@ async function displayTower(discordUserId) {
   const imageUrl = towerImages[tower.level] || towerImages.default;
   console.log("Tower image URL:", imageUrl);
 
+  // Format rooms data
+  const roomStatus =
+    Object.entries(tower.rooms || {})
+      .map(([roomName, roomData]) => {
+        return `${roomName}: Level ${roomData.level}`;
+      })
+      .join("\n") || "No rooms unlocked yet.";
+
   const embed = new EmbedBuilder()
     .setTitle("🗼 Guild Tower")
     .addFields(
@@ -38,10 +46,7 @@ async function displayTower(discordUserId) {
       { name: "Energy Pool", value: `${tower.energy_pool}`, inline: true },
       {
         name: "Rooms",
-        value:
-          tower.rooms.length > 0
-            ? tower.rooms.map((r) => `• ${r}`).join("\n")
-            : "No rooms unlocked yet.",
+        value: roomStatus,
         inline: true,
       },
       {

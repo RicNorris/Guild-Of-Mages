@@ -89,11 +89,19 @@ module.exports = {
       const guildId = insertResult.rows[0].id;
       console.log("Guild id going into the tower: ", guildId);
 
-      // Create the associated guild tower
+      // Create the associated guild tower and add the Guildstone Room
       await pool.query(
-        `INSERT INTO guild_towers (guild_id)
-         VALUES ($1)`,
-        [guildId]
+        `INSERT INTO guild_towers (guild_id, rooms)
+   VALUES ($1, $2)`,
+        [
+          guildId,
+          JSON.stringify({
+            "Guildstone Room": {
+              level: 1,
+              unlockedAt: new Date(), // Store the current date and time as when it's unlocked
+            },
+          }),
+        ]
       );
 
       return interaction.reply(
