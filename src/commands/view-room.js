@@ -19,7 +19,7 @@ module.exports = {
     if (unlockedRooms.length === 0) {
       return interaction.reply({
         content: "No rooms have been unlocked yet.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -38,7 +38,7 @@ module.exports = {
     return interaction.reply({
       content: "Select a room to view its details:",
       components: [row],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

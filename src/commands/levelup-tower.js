@@ -36,7 +36,7 @@ module.exports = {
     if (res.rowCount === 0) {
       return interaction.reply({
         content: "Tower not found.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
