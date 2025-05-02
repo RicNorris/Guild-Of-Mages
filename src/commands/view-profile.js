@@ -51,6 +51,13 @@ module.exports = {
             name: "Archetype",
             value: player.archetype || "Unaligned",
             inline: true,
+          },
+          {
+            name: "🛡️ Role",
+            value: player.role
+              ? player.role.charAt(0).toUpperCase() + player.role.slice(1)
+              : "No role assigned",
+            inline: true,
           }
         )
         .setFooter({

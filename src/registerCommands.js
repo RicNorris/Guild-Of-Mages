@@ -27,7 +27,13 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
       { body: commands }
     );
     console.log("Commands registered!");
+
+    // Exit with success code
+    process.exit(0);
   } catch (error) {
     console.error("Error registering commands:", error);
+
+    // Exit with error code
+    process.exit(1);
   }
 })();
