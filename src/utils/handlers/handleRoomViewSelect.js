@@ -3,6 +3,8 @@ const { EmbedBuilder } = require("discord.js");
 const { getGuildTowerData } = require("./guildFunctions");
 
 const ROOM_DESCRIPTIONS = require("../../utils/rooms_metadata");
+const ROOM_IMAGES = require("../../utils/roomImages");
+
 async function handleRoomViewSelect(interaction) {
   const selectedRoom = interaction.values[0];
   const guildId = interaction.guild.id;
@@ -22,6 +24,8 @@ async function handleRoomViewSelect(interaction) {
     description: "No description available.",
   };
 
+  const imageUrl = ROOM_IMAGES[selectedRoom] || ROOM_IMAGES.default;
+
   const embed = new EmbedBuilder()
     .setTitle(meta.name)
     .setDescription(meta.description)
@@ -35,6 +39,7 @@ async function handleRoomViewSelect(interaction) {
         inline: true,
       }
     )
+    .setImage(imageUrl)
     .setColor("Blue");
 
   return interaction.update({
