@@ -1,0 +1,50 @@
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
+const pool = require("../utils/database");
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("promote")
+    .setDescription("Promote a member to officer.")
+    .addUserOption((option) =>
+      option
+        .setName("user")
+        .setDescription("The user to promote")
+        .setRequired(true)
+    ),
+
+  async execute(interaction) {
+    const user = interaction.options.getUser("user");
+    const guildId = interaction.guild.id;
+    const member = await interaction.guild.members.fetch(user.id);
+
+    // Fetch guild data and check if user is authorized
+    const guildRes = await pool.query(
+      "SELECT * FROM guilds WHERE discord_guild_id = $1",
+      [guildId]
+    );
+    const guild = guildRes.rows[0];
+
+    // Check if the requester is authorized (Owner or Officer)
+    const memberRes = await pool.query(
+      "SELECT * FROM players WHERE discord_user_id = $1 AND guild_id = $2",
+      [interaction.user.id, guild.id]
+    );
+    const requester = memberRes.rows[0];
+    if (requester.role !== "owner" && requester.role !== "officer") {
+      return interaction.reply({
+        content: "You don't have permission to promote members.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    // Update the member's role in the database
+    await pool.query(
+      "UPDATE players SET role = 'officer' WHERE discord_user_id = $1 AND guild_id = $2",
+      [user.id, guild.id]
+    );
+
+    return interaction.reply({
+      content: `<@${user.id}> has been promoted to Officer!`,
+    });
+  },
+};

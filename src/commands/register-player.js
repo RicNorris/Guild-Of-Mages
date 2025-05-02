@@ -53,7 +53,12 @@ module.exports = {
         });
       }
 
-      const guildId = guildResult.rows[0].id;
+      const guild = guildResult.rows[0];
+      const guildId = guild.id;
+
+      // Determine player role
+      const role =
+        String(guild.owner_id) === discordUserId ? "owner" : "member";
 
       // Initial title for the player
       const initialTitleObject = [
@@ -67,12 +72,13 @@ module.exports = {
       // Insert the player
       await pool.query(
         `INSERT INTO players (
-              discord_user_id, discord_guild_id, guild_id, current_title, unlocked_titles
-            ) VALUES ($1, $2, $3, $4, $5)`,
+              discord_user_id, discord_guild_id, guild_id, role, current_title, unlocked_titles
+            ) VALUES ($1, $2, $3, $4, $5, $6)`,
         [
           discordUserId,
           discordGuildId,
           guildId,
+          role,
           title,
           JSON.stringify(initialTitleObject),
         ]
