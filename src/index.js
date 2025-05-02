@@ -4,11 +4,14 @@ const app = express();
 const dotenv = require("dotenv");
 const { exec } = require("child_process");
 const { MessageFlags } = require("discord.js");
+const startEnergyRegenLoop =
+  require("./utils/handlers/towerFunctions").startEnergyRegenLoop;
 
 dotenv.config();
 
 // Handlers
 const handleGuildMembers = require("./utils/handlers/guildMembers");
+const handleRoomViewSelect = require("./utils/handlers/handleRoomViewSelect");
 
 // Create the client
 const client = new Client({
@@ -36,6 +39,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return; // Stop further handling
   }
 
+  if (interaction.isStringSelectMenu()) {
+    if (interaction.customId === "select-room-view") {
+      await handleRoomViewSelect(interaction);
+      return;
+    }
+  }
+
   if (interaction.isChatInputCommand()) {
     // Handle slash command interaction
     const command = client.commands.get(interaction.commandName);
@@ -56,6 +66,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 // On ready
 client.once(Events.ClientReady, () => {
   console.log(`Bot is now online as ${client.user.tag}`);
+
+  startEnergyRegenLoop(); // Start the energy regeneration loop
 });
 
 app.post("/webhook", (req, res) => {
