@@ -28,7 +28,6 @@ async function displayTower(discordUserId) {
   const tower = towerRes.rows[0];
 
   const imageUrl = towerImages[tower.level] || towerImages.default;
-  console.log("Tower image URL:", imageUrl);
 
   // Format rooms data
   const roomStatus =
@@ -43,11 +42,23 @@ async function displayTower(discordUserId) {
     .addFields(
       { name: "Level", value: `${tower.level}`, inline: true },
       { name: "XP", value: `${tower.xp}`, inline: true },
-      { name: "Energy Pool", value: `${tower.energy_pool}`, inline: true },
+      {
+        name: "Energy Pool",
+        value: `${tower.energy_pool} / ${tower.max_energy_pool} (${tower.energy_regen_rate}/min)`,
+        inline: true,
+      },
       {
         name: "Rooms",
-        value: roomStatus,
-        inline: true,
+        value:
+          Object.keys(tower.rooms).length > 0
+            ? Object.entries(tower.rooms)
+                .map(
+                  ([roomName, roomData]) =>
+                    `• ${roomName} (Lvl ${roomData.level})`
+                )
+                .join("\n")
+            : "No rooms unlocked yet.",
+
       },
       {
         name: "Upgrades",
