@@ -109,36 +109,22 @@ async function handleButton(interaction) {
 
     // Top 5 participants
     const topParticipantsRes = await pool.query(
-      `SELECT ep.player_id, ep.damage_dealt
-     FROM event_participants ep
-     WHERE ep.event_id = $1
-     ORDER BY ep.damage_dealt DESC
-     LIMIT 5`,
+      `SELECT ep.damage_dealt, p.discord_user_id
+       FROM event_participants ep
+       JOIN players p ON ep.player_id = p.id
+       WHERE ep.event_id = $1
+       ORDER BY ep.damage_dealt DESC
+       LIMIT 5`,
       [eventId]
     );
 
-    const leaderboard = await Promise.all(
-      topParticipantsRes.rows.map(async (row, index) => {
-        const playerRes = await pool.query(
-          "SELECT discord_user_id FROM players WHERE id = $1",
-          [row.player_id]
-        );
-
-        const discordUserId = playerRes.rows[0]?.discord_user_id;
-        let username = "Unknown Player";
-
-        if (discordUserId) {
-          try {
-            const user = await interaction.client.users.fetch(discordUserId);
-            username = user.username;
-          } catch (err) {
-            console.warn(`Failed to fetch user ${discordUserId}:`, err);
-          }
-        }
-
-        return `**${index + 1}.** ${username} – 🗡️ ${row.damage_dealt} damage`;
+    const leaderboard = topParticipantsRes.rows
+      .map((row, index) => {
+        return `**${index + 1}.** <@${row.discord_user_id}> – 🗡️ ${
+          row.damage_dealt
+        } damage`;
       })
-    ).then((entries) => entries.join("\n"));
+      .join("\n");
 
     // Edit the original event message to show it's over
     try {
