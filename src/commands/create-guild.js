@@ -88,7 +88,6 @@ module.exports = {
 
       const guildId = insertResult.rows[0].id;
       console.log("Guild id going into the tower: ", guildId);
-
       
       const guildstoneRoom = {
         "Guildstone Room": {
@@ -101,6 +100,7 @@ module.exports = {
         `INSERT INTO guild_towers (guild_id, rooms)
          VALUES ($1, $2)`,
         [guildId, JSON.stringify(guildstoneRoom)]
+
       );
 
       return interaction.reply(

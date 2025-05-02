@@ -29,6 +29,14 @@ async function displayTower(discordUserId) {
 
   const imageUrl = towerImages[tower.level] || towerImages.default;
 
+  // Format rooms data
+  const roomStatus =
+    Object.entries(tower.rooms || {})
+      .map(([roomName, roomData]) => {
+        return `${roomName}: Level ${roomData.level}`;
+      })
+      .join("\n") || "No rooms unlocked yet.";
+
   const embed = new EmbedBuilder()
     .setTitle("🗼 Guild Tower")
     .addFields(
@@ -50,6 +58,7 @@ async function displayTower(discordUserId) {
                 )
                 .join("\n")
             : "No rooms unlocked yet.",
+
       },
       {
         name: "Upgrades",
