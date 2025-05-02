@@ -12,6 +12,7 @@ dotenv.config();
 // Handlers
 const handleGuildMembers = require("./utils/handlers/guildMembers");
 const handleRoomViewSelect = require("./utils/handlers/handleRoomViewSelect");
+const handleButton = require("./utils/handlers/handleAttack");
 
 // Create the client
 const client = new Client({
@@ -33,7 +34,16 @@ for (const file of commandFiles) {
 
 // Handle interactionCreate event
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (interaction.isButton()) {
+  if (
+    interaction.isButton() &&
+    interaction.customId &&
+    interaction.customId.startsWith("event-attack-")
+  ) {
+    console.log("Attack button pressed:", interaction.customId);
+    await handleButton(interaction); // Call the attack handler
+  }
+
+  if (interaction.isButton() && interaction.customId === "view_guild_members") {
     // Handle button interaction
     await handleGuildMembers(interaction);
     return; // Stop further handling
