@@ -2,7 +2,7 @@
 
 Welcome to the **Guild of Mages** project! This bot allows Discord users to build and grow a guild of mages, cast spells, earn achievements, and progress through a rich magic-themed world. It's designed to offer a collaborative experience for guild members with leveling, tower upgrades, and more.
 
-## Features
+## Planned Features
 
 - **Guild Progression:** Each server hosts a unique guild that levels up through player actions like casting spells, completing challenges, and contributing to guild goals.
 - **Mage Roles:** Players can choose and level up their mage archetypes and knowledge tracks.
