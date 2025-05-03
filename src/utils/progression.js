@@ -1,4 +1,5 @@
 const pool = require("../utils/database");
+const { getAllSpells } = require("./spells/spellIndex");
 
 async function checkLevelUp(player) {
   const xp = player.xp;
@@ -8,6 +9,28 @@ async function checkLevelUp(player) {
 
   if (xp >= xpNeeded) {
     const newLevel = level + 1;
+
+    const { rows } = await pool.query(
+      `SELECT spellbook FROM players WHERE id = $1`,
+      [player.id]
+    );
+    const spellbook = rows[0].spellbook || [];
+    
+    const allSpells = getAllSpells();
+    const newlyUnlockedSpells = allSpells
+      .filter(
+        (spell) =>
+          spell.unlockLevel === newLevel && !spellbook.includes(spell.id)
+      )
+      .map((spell) => spell.id);
+    
+    if (newlyUnlockedSpells.length > 0) {
+      await pool.query(
+        `UPDATE players SET spellbook = spellbook || $1::jsonb WHERE id = $2`,
+        [JSON.stringify(newlyUnlockedSpells), player.id]
+      );
+    }
+    
     const newRank = getRankFromLevel(newLevel);
 
     await pool.query(`UPDATE players SET level = $1, rank = $2 WHERE id = $3`, [
@@ -20,6 +43,7 @@ async function checkLevelUp(player) {
       leveledUp: true,
       newLevel,
       newRank,
+      newSpells: newlyUnlockedSpells,
     };
   }
 

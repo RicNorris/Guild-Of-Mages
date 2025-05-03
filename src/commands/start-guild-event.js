@@ -67,12 +67,14 @@ module.exports = {
 
     const eventId = eventRes.rows[0].event_id;
     console.log("Event ID:", eventId);
-    const attackBtn = new ButtonBuilder()
-      .setCustomId(`event-attack-${eventId}`)
-      .setLabel("Attack!")
-      .setStyle(ButtonStyle.Danger);
 
-    const row = new ActionRowBuilder().addComponents(attackBtn);
+    // Updated button
+    const chooseSpellBtn = new ButtonBuilder()
+      .setCustomId(`event-choose-${eventId}`)
+      .setLabel("Choose Spell")
+      .setStyle(ButtonStyle.Primary);
+
+    const row = new ActionRowBuilder().addComponents(chooseSpellBtn);
 
     const embed = new EmbedBuilder()
       .setTitle(`🛡️ Guild Event Started!`)

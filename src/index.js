@@ -12,8 +12,8 @@ dotenv.config();
 // Handlers
 const handleGuildMembers = require("./utils/handlers/guildMembers");
 const handleRoomViewSelect = require("./utils/handlers/handleRoomViewSelect");
-const handleButton = require("./utils/handlers/handleAttack");
-
+const handleSpellChoice = require("./utils/handlers/handleSpellChoice");
+const handleSpellCast = require("./utils/handlers/handleSpellCast");
 // Create the client
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -37,10 +37,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (
     interaction.isButton() &&
     interaction.customId &&
-    interaction.customId.startsWith("event-attack-")
+    interaction.customId.startsWith("event-choose-")
   ) {
-    console.log("Attack button pressed:", interaction.customId);
-    await handleButton(interaction); // Call the attack handler
+    console.log("Spell choose event pressed:", interaction.customId);
+    await handleSpellChoice(interaction); // Call the attack handler
   }
 
   if (interaction.isButton() && interaction.customId === "view_guild_members") {
@@ -53,6 +53,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.customId === "select-room-view") {
       await handleRoomViewSelect(interaction);
       return;
+    } else if (interaction.customId === "spell-select") {
+      return handleSpellCast(interaction);
     }
   }
 
