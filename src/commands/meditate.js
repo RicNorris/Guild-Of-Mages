@@ -6,7 +6,7 @@ const checkAchievements = require("../utils/achievements/checkAchievements");
 const redis = require("../utils/redisClient");
 const { MessageFlags } = require("discord.js");
 
-const MEDITATION_COOLDOWN_SECONDS = 2 * 60 * 60; // 2 hours
+const MEDITATION_COOLDOWN_SECONDS = 30 * 60; // Half an hour
 
 module.exports = {
   data: new SlashCommandBuilder()
