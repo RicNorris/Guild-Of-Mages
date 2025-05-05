@@ -25,7 +25,7 @@ async function handleSpellSelect(interaction) {
   }
 
   const enemyRes = await pool.query(
-    "SELECT name FROM enemies WHERE enemy_id = $1",
+    "SELECT name, image_url FROM enemies WHERE enemy_id = $1",
     [event.enemy_id]
   );
   const enemy = enemyRes.rows[0];
@@ -147,7 +147,8 @@ async function handleSpellSelect(interaction) {
       .setDescription(
         `**${enemy.name}** is under attack!\n**Current HP:** ${newHp} / ${event.max_hp}`
       )
-      .setColor("DarkRed");
+      .setColor("DarkRed")
+      .setImage(enemy.image_url);
 
     await message.edit({ embeds: [bossEmbed] });
   } catch (err) {

@@ -81,7 +81,8 @@ module.exports = {
       .setDescription(
         `An enemy has appeared: **${enemy.name}**\nHP: **${enemy.max_hp}**`
       )
-      .setColor("Red");
+      .setColor("Red")
+      .setImage(enemy.image_url);
 
     const msg = await interaction.reply({
       embeds: [embed],
