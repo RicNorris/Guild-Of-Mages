@@ -5,7 +5,7 @@ module.exports = [
     type: "combat",
     description: "Deals 20–30 fire damage to a single enemy.",
     damage: { min: 20, max: 30 },
-    cooldown: 3000,
+    cooldown: 30,
     manaCost: 10,
     unlockLevel: 3,
     flavor: "A focused flame, summoned with a whisper and a snap.",

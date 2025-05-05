@@ -25,7 +25,7 @@ async function handleRoomViewSelect(interaction) {
   };
 
   const imageUrl = ROOM_IMAGES[selectedRoom] || ROOM_IMAGES.default;
-
+  console.log(imageUrl);
   const embed = new EmbedBuilder()
     .setTitle(meta.name)
     .setDescription(meta.description)
