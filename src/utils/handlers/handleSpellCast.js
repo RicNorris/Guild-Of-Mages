@@ -121,12 +121,17 @@ async function handleSpellSelect(interaction) {
   console.log(`Cooldown TTL for ${cooldownKey}: ${ttl}s`);
 
   // Reply
+  const spellImageUrl = `https://github.com/RicNorris/Guild-Of-Mages/blob/main/public/spells/${
+    spell.id || "ignis_shard"
+  }.png?raw=true`;
+
   const embed = new EmbedBuilder()
     .setTitle(`✨ ${spell.name} Cast!`)
     .setDescription(
       `You cast **${spell.name}** and dealt **${damage}** damage!\n${enemy.name} HP: **${newHp} / ${event.max_hp}**`
     )
-    .setColor("Red");
+    .setColor("Red")
+    .setImage(spellImageUrl);
 
   await interaction.reply({
     embeds: [embed],
