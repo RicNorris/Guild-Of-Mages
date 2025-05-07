@@ -6,6 +6,8 @@ const { exec } = require("child_process");
 const { MessageFlags } = require("discord.js");
 const startEnergyRegenLoop =
   require("./utils/handlers/towerFunctions").startEnergyRegenLoop;
+const startManaRegenLoop =
+  require("./utils/handlers/playerFunctions").startManaRegenLoop;
 
 dotenv.config();
 
@@ -80,6 +82,7 @@ client.once(Events.ClientReady, () => {
   console.log(`Bot is now online as ${client.user.tag}`);
 
   startEnergyRegenLoop(); // Start the energy regeneration loop
+  startManaRegenLoop(); // Start the mana regeneration loop
 });
 
 app.post("/webhook", (req, res) => {
