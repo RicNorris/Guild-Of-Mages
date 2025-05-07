@@ -118,7 +118,6 @@ async function handleSpellSelect(interaction) {
 
   await redis.setEx(cooldownKey, spell.cooldown, "onCooldown");
   const ttl = await redis.ttl(cooldownKey);
-  console.log(`Cooldown TTL for ${cooldownKey}: ${ttl}s`);
 
   // Reply
   const spellImageUrl = `https://github.com/RicNorris/Guild-Of-Mages/blob/main/public/spells/${
@@ -133,6 +132,14 @@ async function handleSpellSelect(interaction) {
     .setColor("Red")
     .setImage(spellImageUrl);
 
+  console.log(
+    "Spell cast:",
+    spell.name,
+    "by player",
+    player.id,
+    "Damage dealt:",
+    damage
+  );
   await interaction.reply({
     embeds: [embed],
     ephemeral: true,

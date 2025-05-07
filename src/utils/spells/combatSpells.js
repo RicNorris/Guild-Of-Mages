@@ -13,6 +13,18 @@ module.exports = [
       "A humble trick—more nuisance than threat, but magic gives it bite.",
   },
   {
+    id: "aqua_dart",
+    name: "Aqua Dart",
+    type: "combat",
+    description:
+      "Fires a pressurized dart of water at the enemy, with a slight chance to reduce accuracy.",
+    damage: { min: 6, max: 10 },
+    cooldown: 18,
+    manaCost: 4,
+    unlockLevel: 1,
+    flavor: "Sharper than ice, faster than rain—water made weapon.",
+  },
+  {
     id: "shadow_dagger",
     name: "Shadow Dagger",
     type: "combat",
