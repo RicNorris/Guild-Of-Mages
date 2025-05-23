@@ -1,4 +1,4 @@
-# Guild of Mages - Discord Bot
+# Guild of Mages - Discord Bot (DEVELOPMENT PAUSED ATM)
 
 Welcome to the **Guild of Mages** project! This bot allows Discord users to build and grow a guild of mages, cast spells, earn achievements, and progress through a rich magic-themed world. It's designed to offer a collaborative experience for guild members with leveling, tower upgrades, and more.
 
